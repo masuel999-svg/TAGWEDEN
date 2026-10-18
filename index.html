@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Educational Snakes & Ladders | Online Teacher Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            padding: 10px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 8px;
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 2px solid #e2e8f0;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        header .author-title {
+            font-size: 1rem;
+            color: #0d9488;
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        header .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 30px;
+        }
+
+        .screen {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary), #3b82f6);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent), #d97706);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+
+        .char-card {
+            border: 3px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        .char-card.selected {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .char-card span {
+            font-size: 2.2rem;
+            display: block;
+        }
+
+        .game-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        @media(min-width: 768px) {
+            .game-layout {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+
+        .board-container {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 5px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cell {
+            border: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 2px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            position: relative;
+            background: #f8fafc;
+        }
+
+        .cell:nth-child(even) { background: #f1f5f9; }
+
+        .cell-num {
+            color: #475569;
+            font-weight: 900;
+            z-index: 3;
+            background: rgba(255,255,255,0.85);
+            padding: 1px 3px;
+            border-radius: 4px;
+        }
+
+        svg.board-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .tokens-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+        }
+
+        .token-spot {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .player-token {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 2px solid white;
+            transition: transform 0.2s ease;
+        }
+
+        .control-panel {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @media(min-width: 768px) {
+            .control-panel {
+                width: 300px;
+            }
+        }
+
+        .player-card-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .player-card-box.active {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-avatar {
+            font-size: 2rem;
+            background: white;
+            padding: 4px;
+            border-radius: 50%;
+        }
+
+        .move-box {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .move-result {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            min-height: 30px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 6px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-align: center;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-btn {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .option-btn.correct {
+            background: #d1fae5 !important;
+            border-color: var(--success) !important;
+            color: #065f46 !important;
+        }
+
+        .option-btn.incorrect {
+            background: #fee2e2 !important;
+            border-color: var(--danger) !important;
+            color: #991b1b !important;
+        }
+
+        .explanation-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #92400e;
+        }
+
+        .developer-sig {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .badge-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .icon-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="author-title">Prepared by Dr. Mohsen Elkashef</div>
+    <h1>Educational Snakes & Ladders (Jannat Al Quran Tajweed)</h1>
+    <div class="subtitle">📘 Facebook Page: Online Teacher Hub</div>
+</header>
+
+<div class="container">
+    
+    <!-- Setup Screen -->
+    <div id="screen-setup" class="screen">
+        <div style="text-align: center; display: flex; flex-direction: column; gap: 5px;">
+            <span style="font-size: 2.5rem;">👦👧</span>
+            <h2 style="color: var(--primary);">Tajweed Learning Adventure</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Choose your name and character to start your fun journey!</p>
+        </div>
+
+        <div class="form-group">
+            <label>Player Name:</label>
+            <input type="text" id="player-name" value="Young Hero" maxlength="15">
+        </div>
+
+        <div class="form-group">
+            <label>Choose Character (Boy / Girl):</label>
+            <div class="char-grid" id="player-chars">
+                <div class="char-card selected" onclick="selectGender('👦', this)"><span>👦</span><h4>Boy</h4></div>
+                <div class="char-card" onclick="selectGender('👧', this)"><span>👧</span><h4>Girl</h4></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Game Rule Mode:</label>
+            <select id="rule-mode-select">
+                <option value="edu">Educational Mode (Correct answer needed to climb ladders & advance)</option>
+                <option value="classic">Classic Mode (Automatic movement, questions for rewards & learning)</option>
+            </select>
+        </div>
+
+        <button class="btn" style="width: 100%;" onclick="startGame()">Start Game Now 🚀</button>
+        <div class="developer-sig">Prepared by Dr. Mohsen Elkashef – Online Teacher Hub</div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="screen-game" class="screen hidden" style="padding: 10px;">
+        <div class="top-bar">
+            <button class="icon-btn" onclick="toggleSound()" id="sound-toggle-btn" title="Toggle Sound">🔊</button>
+            <div style="font-weight: 700; font-size: 0.85rem; color: var(--primary);" id="current-rule-badge">Educational Mode</div>
+            <button class="icon-btn" onclick="backToSetup()" title="Return to Setup">🏠</button>
+        </div>
+
+        <div class="game-layout">
+            <div class="board-container">
+                <svg class="board-svg" id="board-svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                <div class="board" id="board-grid"></div>
+                <div class="tokens-layer" id="tokens-layer"></div>
+            </div>
+
+            <div class="control-panel">
+                <div class="player-card-box active">
+                    <div class="player-info">
+                        <div class="player-avatar" id="pavatar-disp">👦</div>
+                        <div>
+                            <h4 id="pname-disp" style="font-size:0.95rem;">Hero</h4>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Current Square: <span id="ppos">1</span></div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="badge-tag" id="pbadge">Beginner</span>
+                        <div style="font-size: 0.7rem; margin-top: 3px; color: var(--success);" id="pcorrect">Correct: 0</div>
+                    </div>
+                </div>
+
+                <div class="move-box">
+                    <div style="font-weight: 700; font-size: 0.95rem;">Random Step Movement</div>
+                    <div class="move-result" id="move-result-text">Press to Move 🎲</div>
+                    <button class="btn btn-accent" id="move-btn" onclick="startRandomMove()" style="width: 100%;">Move Now 🎯</button>
+                </div>
+            </div>
+        </div>
+        <div class="developer-sig">Prepared by Dr. Mohsen Elkashef – Online Teacher Hub</div>
+    </div>
+
+    <!-- Win Screen -->
+    <div id="screen-win" class="screen hidden" style="text-align: center;">
+        <span style="font-size: 3.5rem;">🏆🎉</span>
+        <h2 style="color: var(--primary); font-size: 1.5rem;" id="winner-announcement">Congratulations! You Completed the Journey</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;" id="winner-stats-text">You mastered the Tajweed books successfully!</p>
+        
+        <div style="display: flex; gap: 8px; width: 100%; margin-top: 10px;">
+            <button class="btn" style="flex: 1; font-size:0.95rem;" onclick="restartGame()">Play Again 🔄</button>
+            <button class="btn btn-secondary" style="flex: 1; font-size:0.95rem;" onclick="openMistakesModal()">Review Mistakes 📖</button>
+        </div>
+        <button class="btn btn-accent" style="width: 100%; margin-top: 5px;" onclick="backToSetup()">Back to Home 🏠</button>
+        <div class="developer-sig">Prepared by Dr. Mohsen Elkashef – Online Teacher Hub</div>
+    </div>
+
+</div>
+
+<!-- Question Modal -->
+<div id="question-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="question-header">
+            <span id="q-meta-info">Tajweed Topic</span>
+            <span class="badge-tag" id="q-level-badge">Important</span>
+        </div>
+        <div class="question-text" id="q-text-content">Question text here</div>
+        <div class="options-grid" id="q-options-container"></div>
+        <div class="explanation-box hidden" id="q-explanation-box">
+            <strong>Book Explanation: </strong><span id="q-explanation-text"></span>
+        </div>
+        <button class="btn hidden" id="q-next-btn" onclick="closeQuestionModal()">Continue Progress ➡️</button>
+    </div>
+</div>
+
+<!-- Mistakes Review Modal -->
+<div id="mistakes-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <h3 style="color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 6px; font-size:1.1rem;">Review Tajweed Questions</h3>
+        <div id="mistakes-list-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto;"></div>
+        <button class="btn" onclick="closeMistakesModal()">Close Review</button>
+    </div>
+</div>
+
+<script>
+    // Comprehensive English Question Bank derived strictly from Book 1 and Book 2 (Shaykha Dina Essam)
+    const questionBank = [
+        // Book 1: Arabic Alphabet & Heavy Letters
+        {
+            lesson: "Arabic Alphabet (Book 1)", level: "Easy",
+            question: "How many letters make up the Arabic alphabet according to Book 1?",
+            options: ["25 letters", "28 letters", "29 letters", "30 letters"], correct: 2,
+            explanation: "The arabic alphabet is made up of 29 letters[cite: 48]."
+        },
+        {
+            lesson: "Arabic Alphabet (Book 1)", level: "Medium",
+            question: "How many letters are always pronounced with a full mouth (heavy letters) (خص ضغط قظ)?",
+            options: ["5 letters", "6 letters", "7 letters", "8 letters"], correct: 2,
+            explanation: "Seven letters are always pronounced with a full mouth (heavy letters): خص ضغط قظ[cite: 48]."
+        },
+        {
+            lesson: "Arabic Alphabet (Book 1)", level: "Medium",
+            question: "Which of the following groups represents the permanent heavy letters?",
+            options: ["خص ضغط قظ[cite: 48]", "قطب جد", "Yarmoon", "Huroof-ul Madd"], correct: 0,
+            explanation: "The heavy letters are marked in red: خص ضغط قظ[cite: 48]."
+        },
+
+        // Book 1: Harakah (Fathah, Kasrah, Dhammah)
+        {
+            lesson: "Harakah (Book 1)", level: "Easy",
+            question: "What is a Fathah and what sound does it resemble?",
+            options: ["A symbol above a letter sounding like 'a' in man[cite: 57]", "A symbol below a letter sounding like 'i'", "A symbol sounding like 'u'", "A sukoon sign"], correct: 0,
+            explanation: "Fathah is a small symbol which appears above a letter. It sounds like 'a' in man[cite: 57]."
+        },
+        {
+            lesson: "Harakah (Book 1)", level: "Easy",
+            question: "Where does the Kasrah appear relative to the letter?",
+            options: ["Above the letter", "Below the letter[cite: 59]", "Beside the letter", "At the end only"], correct: 1,
+            explanation: "Kasrah is a small symbol which appears below a letter[cite: 59]."
+        },
+        {
+            lesson: "Harakah (Book 1)", level: "Medium",
+            question: "What collective name is given to Fathah, Kasrah, and Dhammah?",
+            options: ["Tanween", "Harakah[cite: 63]", "Sukoon", "Shaddah"], correct: 1,
+            explanation: "Fathah, Kasrah & Dhammah are collectively known as HARAKAH[cite: 63]."
+        },
+
+        // Book 1 & 2: Sukoon & Qalqalah
+        {
+            lesson: "Sukoon & Qalqalah (Book 1 & 2)", level: "Medium",
+            question: "What are the letters of Qalqalah mentioned in the books?",
+            options: ["Yarmoon", "Khas Daght Qiz", "Qutb Jad[cite: 67, 130]", "Al-Nama"], correct: 2,
+            explanation: "Letters of Qalqalah are قطب جد (Qutb Jad)[cite: 67, 130]."
+        },
+        {
+            lesson: "Sukoon & Qalqalah (Book 1 & 2)", level: "Hard",
+            question: "How should Qalqalah letters be read when they have a Sukoon?",
+            options: ["Silently without any sound", "With an echo or jerking sound at their articulation point[cite: 67, 130]", "Dropped completely", "Merged into Meem"], correct: 1,
+            explanation: "If you see any of these letters with a Sukoon, you should read with an echo or jerking sound[cite: 67, 130]."
+        },
+        {
+            lesson: "Sukoon & Qalqalah (Book 1 & 2)", level: "Hard",
+            question: "What are the types of Qalqalah based on stopping position in Book 2?",
+            options: ["Minor, Medium, Major[cite: 131]", "Initial and Final", "Clear and Hidden", "Light and Heavy"], correct: 0,
+            explanation: "Types of Qalqalah: Minor (Sughra), Medium (Wusta), Major (Kubra)[cite: 131]."
+        },
+
+        // Book 1: Tanween
+        {
+            lesson: "Tanween (Book 1)", level: "Easy",
+            question: "What is the definition of Tanween in the student manual?",
+            options: ["A long madd letter", "A Noon Sakinah which appears at the end of a noun (like an 'n' sound)[cite: 70]", "A doubled shaddah", "A connecting hamza"], correct: 1,
+            explanation: "Tanween is Noon Sakinah which appears at the end of a noun, it is like an 'n' sound[cite: 70]."
+        },
+        {
+            lesson: "Tanween (Book 1)", level: "Medium",
+            question: "What are the names of the three types of Tanween?",
+            options: ["Fathatain, Kasratain & Dhammatain[cite: 70]", "Izhaar, Ikhfaa, Iqlaab", "Muttasil, Munfasil, Badal", "Shaddah, Sukoon, Madd"], correct: 0,
+            explanation: "Doubling the Fathah, Kasrah & Dhammah known as Fathatain, Kasratain & Dhammatain[cite: 70]."
+        },
+
+        // Book 1: Huroof-Ul Madd
+        {
+            lesson: "Huroof-Ul Madd (Book 1)", level: "Easy",
+            question: "How many letters of Madd are there, and what are they?",
+            options: ["Two letters (Waaw & Yaa)", "Three letters (Alif, Waaw, Yaa)[cite: 74, 134]", "Four letters", "One letter"], correct: 1,
+            explanation: "There are 3 letters of Madd: Alif, Waaw, Yaa[cite: 74, 134]."
+        },
+        {
+            lesson: "Huroof-Ul Madd (Book 1)", level: "Medium",
+            question: "What vowel conditions create natural Madd (prolonged 2 harakas)?",
+            options: ["Alif preceded by Fathah, Waaw by Dhammah, Yaa by Kasrah[cite: 74, 134]", "Kasrah before Alif", "Sukoon on all letters", "Fathah on all letters"], correct: 0,
+            explanation: "Alif preceded by a Fathah, Waaw Saakin preceded by a Dhammah, Yaa Saakin preceded by a Kasrah[cite: 74, 134]."
+        },
+
+        // Book 2: Rules of Noon Saakin and Tanween
+        {
+            lesson: "Noon Saakin & Tanween (Book 2)", level: "Easy",
+            question: "How many rules govern Noon Saakin and Tanween in Tajweed?",
+            options: ["Two rules", "Three rules", "Four rules (Izhaar, Idghaam, Iqlaab, Ikhfaa)[cite: 104, 110]", "Five rules"], correct: 2,
+            explanation: "The Rules of Noon Saakin and Tanween are Izhaar, Idghaam, Iqlaab, Ikhfaa[cite: 104, 110]."
+        },
+        {
+            lesson: "Noon Saakin & Tanween (Book 2)", level: "Medium",
+            question: "What are the letters of Izhaar for Noon Saakin and Tanween?",
+            options: ["The 6 throat letters (ع، ح، غ، خ، هـ، ء)[cite: 110]", "Only the letter Meem", "Letters of Yarmoon", "The letter Baa"], correct: 0,
+            explanation: "Izhaar Letters are the throat letters: ء، هـ، ع، ح، غ، خ[cite: 110]."
+        },
+        {
+            lesson: "Noon Saakin & Tanween (Book 2)", level: "Medium",
+            question: "What are the letters of Idghaam grouped in the mnemonic (Yarmoon / Yarmaloon)?",
+            options: ["ي ر م و ن ل[cite: 111, 112]", "ب ت ث ج", "س ش ص ض", "ق ك ل م"], correct: 0,
+            explanation: "Idghaam Letters are يرمون / يرملون[cite: 111, 112]."
+        },
+        {
+            lesson: "Noon Saakin & Tanween (Book 2)", level: "Hard",
+            question: "What is the rule when Noon Saakin is followed by the letter Baa (ب)?",
+            options: ["Izhaar Motlaq", "Iqlaab (converted into a hidden Meem with Ghunnah)[cite: 115]", "Complete Idghaam", "Ikhfaa Shafawi"], correct: 1,
+            explanation: "If a Noon Saakin or Tanween is followed by ب, it is converted into Meem (Iqlaab)[cite: 115]."
+        },
+
+        // Book 2: Rules of Meem Saakin
+        {
+            lesson: "Meem Saakin Rules (Book 2)", level: "Easy",
+            question: "How many rules apply to Meem Saakin in Tajweed?",
+            options: ["Two rules", "Three rules (Ikhfaa Shafawi, Idghaam Shafawi, Izhaar Shafawi)[cite: 104, 120]", "Four rules", "Five rules"], correct: 1,
+            explanation: "The Rules of Meem Saakin are 3: Ikhfaa Shafawi, Idghaam Shafawi, Izhaar Shafawi[cite: 104, 120]."
+        },
+        {
+            lesson: "Meem Saakin Rules (Book 2)", level: "Medium",
+            question: "What is the rule of Meem Saakin when followed by a moving Meem (م)?",
+            options: ["Izhaar Shafawi", "Idghaam Shafawi (merged with complete Ghunnah)[cite: 121]", "Iqlaab", "True Ikhfaa"], correct: 1,
+            explanation: "If Meem Saakin is followed by م, it will merge and be pronounced with Ghunnah (Idghaam Shafawi)[cite: 121]."
+        },
+
+        // Book 2: Laam Shamsiyyah & Qamariyyah
+        {
+            lesson: "Laam Shamsiyyah & Qamariyyah (Book 2)", level: "Medium",
+            question: "How is the Laam in Laam Qamariyyah pronounced?",
+            options: ["Merged and silent", "Clearly pronounced with Izhaar (letters: أبغي حجك وخف عقيمه)[cite: 127]", "Converted into Meem", "Dropped completely"], correct: 1,
+            explanation: "Laam Qamariyyah rule is Izhaar, and letters are أَبْغِ حَجَّكَ وَخَفْ عَقِيمَهُ[cite: 127]."
+        },
+
+        // Book 2: Al-Madd (Secondary Madd)
+        {
+            lesson: "Al-Madd (Book 2)", level: "Hard",
+            question: "When does Madd-ul-Muttasil occur and what is its duration?",
+            options: ["When a madd letter is followed by a hamza in separate words (2 harakas)", "When a madd letter is followed by a hamza in the same word (4 or 5 harakas)[cite: 136]", "When followed by sukoon (6 harakas)", "It is natural madd"], correct: 1,
+            explanation: "If a letter of Madd is followed by a Hamzah present in the same word, prolong 4 or 5 harakas[cite: 136]."
+        },
+        {
+            lesson: "Al-Madd (Book 2)", level: "Hard",
+            question: "What is Madd-ul-Lazim (compulsory madd) and what is its length?",
+            options: ["A madd letter followed by an original sukoon or mushaddad letter, prolonged 6 harakas[cite: 142]", "Prolonged 2 harakas only", "Temporary sukoon stop", "Madd Badal"], correct: 0,
+            explanation: "If a letter of Madd is followed by an original Sukoon or Mushaddad letter, prolong 6 harakas[cite: 142]."
+        }
+    ];
+
+    let gameState = {
+        player: { name: 'Hero', avatar: '👦', pos: 1, correctCount: 0, badge: 'Beginner' },
+        ruleMode: 'edu',
+        isMoving: false,
+        activeQuestion: null,
+        soundEnabled: true,
+        mistakesLog: [],
+        pendingSteps: 0,
+        lastAnswerCorrect: true
+    };
+
+    const ladders = { 4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91 };
+    const snakes = { 17: 7, 34: 15, 54: 35, 62: 19, 79: 58, 87: 24, 93: 73, 98: 79 };
+
+    function getBadgeForCount(count) {
+        if (count >= 10) return '⭐ Tajweed Master';
+        if (count >= 5) return '🧠 Diligent Student';
+        return 'Beginner';
+    }
+
+    let audioCtx = null;
+    function initAudio() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playSound(type) {
+        if (!gameState.soundEnabled) return;
+        try {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            let now = audioCtx.currentTime;
+
+            if (type === 'step') {
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.start(now); osc.stop(now + 0.08);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.2);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now); osc.stop(now + 0.35);
+            } else if (type === 'incorrect') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(180, now + 0.2);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'ladder') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.linearRampToValueAtTime(800, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'snake') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+        } catch(e) {}
+    }
+
+    function toggleSound() {
+        gameState.soundEnabled = !gameState.soundEnabled;
+        document.getElementById('sound-toggle-btn').innerText = gameState.soundEnabled ? '🔊' : '🔇';
+    }
+
+    function selectGender(symbol, element) {
+        document.querySelectorAll('#player-chars .char-card').forEach(c => c.classList.remove('selected'));
+        element.classList.add('selected');
+        gameState.player.avatar = symbol;
+    }
+
+    function startGame() {
+        gameState.player.name = document.getElementById('player-name').value || 'Young Hero';
+        gameState.ruleMode = document.getElementById('rule-mode-select').value;
+        gameState.player.pos = 1;
+        gameState.player.correctCount = 0;
+        gameState.player.badge = 'Beginner';
+        gameState.mistakesLog = [];
+
+        document.getElementById('screen-setup').classList.add('hidden');
+        document.getElementById('screen-win').classList.add('hidden');
+        document.getElementById('screen-game').classList.remove('hidden');
+
+        document.getElementById('current-rule-badge').innerText = gameState.ruleMode === 'edu' ? 'Educational Mode' : 'Classic Mode';
+
+        buildBoardGrid();
+        updateUI();
+    }
+
+    function backToSetup() {
+        document.getElementById('screen-game').classList.add('hidden');
+        document.getElementById('screen-win').classList.add('hidden');
+        document.getElementById('screen-setup').classList.remove('hidden');
+    }
+
+    function buildBoardGrid() {
+        const grid = document.getElementById('board-grid');
+        const tokensLayer = document.getElementById('tokens-layer');
+        grid.innerHTML = '';
+        tokensLayer.innerHTML = '';
+
+        for (let row = 9; row >= 0; row--) {
+            for (let col = 0; col < 10; col++) {
+                let cellNum = (row % 2 === 1) ? row * 10 + (10 - col) : row * 10 + (col + 1);
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${cellNum}`;
+
+                cell.innerHTML = `<span class="cell-num">${cellNum}</span>`;
+                grid.appendChild(cell);
+
+                const spot = document.createElement('div');
+                spot.className = 'token-spot';
+                spot.id = `spot-${cellNum}`;
+                tokensLayer.appendChild(spot);
+            }
+        }
+        drawBeautifulArtSVG();
+        renderToken();
+    }
+
+    function getCellCoords(cellNum) {
+        let r = Math.floor((cellNum - 1) / 10);
+        let c = (cellNum - 1) % 10;
+        if (r % 2 === 1) c = 9 - c;
+        let x = c * 10 + 5;
+        let y = (9 - r) * 10 + 5;
+        return { x, y };
+    }
+
+    function drawBeautifulArtSVG() {
+        const svg = document.getElementById('board-svg');
+        svg.innerHTML = '';
+
+        for (let start in ladders) {
+            let end = ladders[start];
+            let p1 = getCellCoords(parseInt(start));
+            let p2 = getCellCoords(end);
+
+            let g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+            let rail1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            rail1.setAttribute('x1', (p1.x - 1.2) + '%'); rail1.setAttribute('y1', p1.y + '%');
+            rail1.setAttribute('x2', (p2.x - 1.2) + '%'); rail1.setAttribute('y2', p2.y + '%');
+            rail1.setAttribute('stroke', '#b45309'); rail1.setAttribute('stroke-width', '1.4');
+
+            let rail2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            rail2.setAttribute('x1', (p1.x + 1.2) + '%'); rail2.setAttribute('y1', p1.y + '%');
+            rail2.setAttribute('x2', (p2.x + 1.2) + '%'); rail2.setAttribute('y2', p2.y + '%');
+            rail2.setAttribute('stroke', '#b45309'); rail2.setAttribute('stroke-width', '1.4');
+
+            g.appendChild(rail1);
+            g.appendChild(rail2);
+
+            let stepsCount = 5;
+            for (let i = 1; i < stepsCount; i++) {
+                let ratio = i / stepsCount;
+                let sx = p1.x + (p2.x - p1.x) * ratio;
+                let sy = p1.y + (p2.y - p1.y) * ratio;
+                let rungs = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                rungs.setAttribute('x1', (sx - 1.2) + '%'); rungs.setAttribute('y1', sy + '%');
+                rungs.setAttribute('x2', (sx + 1.2) + '%'); rungs.setAttribute('y2', sy + '%');
+                rungs.setAttribute('stroke', '#d97706'); rungs.setAttribute('stroke-width', '1.8');
+                g.appendChild(rungs);
+            }
+            svg.appendChild(g);
+        }
+
+        for (let start in snakes) {
+            let end = snakes[start];
+            let p1 = getCellCoords(parseInt(start));
+            let p2 = getCellCoords(end);
+
+            let g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+            let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            let midX = (p1.x + p2.x) / 2 + 7;
+            let midY = (p1.y + p2.y) / 2;
+            path.setAttribute('d', `M ${p1.x} ${p1.y} Q ${midX} ${midY}, ${p2.x} ${p2.y}`);
+            path.setAttribute('stroke', '#16a34a');
+            path.setAttribute('stroke-width', '4.2');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke-linecap', 'round');
+            g.appendChild(path);
+
+            let head = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            head.setAttribute('cx', p1.x); head.setAttribute('cy', p1.y);
+            head.setAttribute('r', '2.5');
+            head.setAttribute('fill', '#22c55e');
+            g.appendChild(head);
+
+            let eye1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            eye1.setAttribute('cx', (p1.x - 0.8)); eye1.setAttribute('cy', (p1.y - 0.8));
+            eye1.setAttribute('r', '0.6'); eye1.setAttribute('fill', '#ffffff');
+            let eye2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            eye2.setAttribute('cx', (p1.x + 0.8)); eye2.setAttribute('cy', (p1.y - 0.8));
+            eye2.setAttribute('r', '0.6'); eye2.setAttribute('fill', '#ffffff');
+
+            g.appendChild(eye1);
+            g.appendChild(eye2);
+            svg.appendChild(g);
+        }
+    }
+
+    function renderToken() {
+        for (let i = 1; i <= 100; i++) {
+            const spot = document.getElementById(`spot-${i}`);
+            if (spot) spot.innerHTML = '';
+        }
+        const spot = document.getElementById(`spot-${gameState.player.pos}`);
+        if (spot) {
+            const token = document.createElement('div');
+            token.className = 'player-token';
+            token.style.background = '#4f46e5';
+            token.innerText = gameState.player.avatar;
+            spot.appendChild(token);
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('pname-disp').innerText = gameState.player.name;
+        document.getElementById('ppos').innerText = gameState.player.pos;
+        document.getElementById('pbadge').innerText = gameState.player.badge;
+        document.getElementById('pcorrect').innerText = `Correct: ${gameState.player.correctCount}`;
+        document.getElementById('pavatar-disp').innerText = gameState.player.avatar;
+    }
+
+    function startRandomMove() {
+        if (gameState.isMoving) return;
+        gameState.isMoving = true;
+        document.getElementById('move-btn').disabled = true;
+
+        let steps = Math.floor(Math.random() * 6) + 1;
+        gameState.pendingSteps = steps;
+        document.getElementById('move-result-text').innerText = `Random Step Result: ${steps} steps 🎲`;
+
+        if (gameState.ruleMode === 'classic') {
+            animateStepByStep(steps, () => {
+                checkLaddersAndSnakes();
+                gameState.isMoving = false;
+                document.getElementById('move-btn').disabled = false;
+                if (gameState.player.pos === 100) triggerWinScreen();
+                else openQuestionModalForReward();
+            });
+        } else {
+            openQuestionModal();
+        }
+    }
+
+    function animateStepByStep(steps, callback) {
+        let currentStepsDone = 0;
+        let interval = setInterval(() => {
+            if (currentStepsDone < steps && gameState.player.pos < 100) {
+                gameState.player.pos++;
+                renderToken();
+                updateUI();
+                playSound('step');
+                currentStepsDone++;
+            } else {
+                clearInterval(interval);
+                if (callback) callback();
+            }
+        }, 350);
+    }
+
+    function checkLaddersAndSnakes() {
+        let pos = gameState.player.pos;
+        if (ladders[pos]) {
+            gameState.player.pos = ladders[pos];
+            renderToken();
+            updateUI();
+            playSound('ladder');
+        } else if (snakes[pos]) {
+            gameState.player.pos = snakes[pos];
+            renderToken();
+            updateUI();
+            playSound('snake');
+        }
+    }
+
+    function openQuestionModal() {
+        const modal = document.getElementById('question-modal');
+        modal.classList.remove('hidden');
+
+        const q = questionBank[Math.floor(Math.random() * questionBank.length)];
+        gameState.activeQuestion = q;
+
+        document.getElementById('q-meta-info').innerText = q.lesson;
+        document.getElementById('q-level-badge').innerText = q.level;
+        document.getElementById('q-text-content').innerText = q.question;
+
+        const optionsContainer = document.getElementById('q-options-container');
+        optionsContainer.innerHTML = '';
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => submitAnswer(idx, q);
+            optionsContainer.appendChild(btn);
+        });
+
+        document.getElementById('q-explanation-box').classList.add('hidden');
+        document.getElementById('q-next-btn').classList.add('hidden');
+    }
+
+    function openQuestionModalForReward() {
+        openQuestionModal();
+    }
+
+    function submitAnswer(selectedIndex, q) {
+        const buttons = document.getElementById('q-options-container').getElementsByClassName('option-btn');
+        let isCorrect = (selectedIndex === q.correct);
+
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].disabled = true;
+            if (i === q.correct) buttons[i].classList.add('correct');
+            else if (i === selectedIndex) buttons[i].classList.add('incorrect');
+        }
+
+        document.getElementById('q-explanation-text').innerText = q.explanation;
+        document.getElementById('q-explanation-box').classList.remove('hidden');
+
+        if (isCorrect) {
+            playSound('correct');
+            gameState.player.correctCount++;
+            gameState.player.badge = getBadgeForCount(gameState.player.correctCount);
+        } else {
+            playSound('incorrect');
+            gameState.mistakesLog.push({ question: q.question, correctAnswer: q.options[q.correct], explanation: q.explanation });
+        }
+
+        gameState.lastAnswerCorrect = isCorrect;
+        document.getElementById('q-next-btn').classList.remove('hidden');
+    }
+
+    function closeQuestionModal() {
+        document.getElementById('question-modal').classList.add('hidden');
+
+        if (gameState.ruleMode === 'edu') {
+            if (gameState.lastAnswerCorrect) {
+                animateStepByStep(gameState.pendingSteps, () => {
+                    checkLaddersAndSnakes();
+                    gameState.isMoving = false;
+                    document.getElementById('move-btn').disabled = false;
+                    if (gameState.player.pos === 100) triggerWinScreen();
+                });
+            } else {
+                gameState.isMoving = false;
+                document.getElementById('move-btn').disabled = false;
+            }
+        } else {
+            gameState.isMoving = false;
+            document.getElementById('move-btn').disabled = false;
+        }
+    }
+
+    function triggerWinScreen() {
+        playSound('correct');
+        document.getElementById('screen-game').classList.add('hidden');
+        document.getElementById('screen-win').classList.remove('hidden');
+
+        document.getElementById('winner-announcement').innerText = `🏆 Congratulations ${gameState.player.name}! You won the game`;
+        document.getElementById('winner-stats-text').innerHTML = `Achievement: <strong>${gameState.player.badge}</strong><br>Correct Answers: <strong>${gameState.player.correctCount}</strong>`;
+    }
+
+    function restartGame() {
+        gameState.player.pos = 1;
+        gameState.player.correctCount = 0;
+        gameState.player.badge = 'Beginner';
+        gameState.isMoving = false;
+        document.getElementById('screen-win').classList.add('hidden');
+        document.getElementById('screen-game').classList.remove('hidden');
+        renderToken(); updateUI();
+    }
+
+    function openMistakesModal() {
+        const container = document.getElementById('mistakes-list-container');
+        container.innerHTML = '';
+        if (gameState.mistakesLog.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color: var(--success); font-weight:700;">Excellent! You made no mistakes in this round 🌟</p>';
+        } else {
+            gameState.mistakesLog.forEach((m, idx) => {
+                container.innerHTML += `<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:8px; border-radius:8px; font-size:0.85rem;">
+                    <strong>Question ${idx+1}:</strong> ${m.question}<br>
+                    <span style="color: var(--success);">Correct Answer: <strong>${m.correctAnswer}</strong></span><br>
+                    <span style="font-size:0.75rem; color: var(--text-muted);">${m.explanation}</span></div>`;
+            });
+        }
+        document.getElementById('mistakes-modal').classList.remove('hidden');
+    }
+
+    function closeMistakesModal() {
+        document.getElementById('mistakes-modal').classList.add('hidden');
+    }
+</script>
+
+</body>
+</html>
